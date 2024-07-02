@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_shared_nested_secttions",
+  "info": {
+    "displayName": "NestedSecttion",
+    "icon": "layer"
+  },
+  "options": {},
+  "attributes": {
+    "NestedSectionTitle": {
+      "type": "text"
+    },
+    "NestedSectionImage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "NestedSectionDescription": {
+      "type": "text"
+    }
+  }
+}

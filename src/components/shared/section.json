@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_shared_sections",
+  "info": {
+    "displayName": "Section",
+    "icon": "layer",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "SectionTitle": {
+      "type": "text"
+    },
+    "SectionImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "SectionDescription": {
+      "type": "text"
+    },
+    "NestedSections": {
+      "displayName": "NestedSecttion",
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.nested-secttion"
+    }
+  }
+}
