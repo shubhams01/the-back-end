@@ -28,7 +28,14 @@ module.exports = {
          middlewares: [],
        },
       },
-      
+      {
+        "method": "GET",
+        "path": "/articles/category/:category",
+        "handler": "article.getArticlesByCategory",
+        "config": {
+          "policies": []
+        }
+      }
     ],
   };
   

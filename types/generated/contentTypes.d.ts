@@ -383,6 +383,7 @@ export interface ApiArticleArticle extends Schema.CollectionType {
       'api::category.category'
     >;
     sections: Attribute.Component<'shared.section', true>;
+    views: Attribute.Integer & Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
