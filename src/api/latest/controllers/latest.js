@@ -19,16 +19,16 @@ module.exports = {
           limit: 1,
           fields: ['id', 'Title', 'Slug', 'createdAt'],
           populate: {
-            // sections: {
-            //   populate: {
-            //     SectionImage: true,
-            //     NestedSections: {
-            //       populate: {
-            //         NestedSectionImage: true,
-            //       },
-            //     },
-            //   },
-            // },
+            sections: {
+              populate: {
+                SectionImage: true,
+                NestedSections: {
+                  populate: {
+                    NestedSectionImage: true,
+                  },
+                },
+              },
+            },
             Image: true,
             category: true
           },
