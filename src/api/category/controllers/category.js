@@ -33,6 +33,11 @@ module.exports = createCoreController(
       } catch (err) {
         // Log and return the error message
         console.error("Error fetching categories:", err);
-        ctx.body = {gi
+        ctx.body = {
+          message: "An error occurred while fetching categories.",
+          error: err.message,
+        };
+      }
+    },
   })
 );
