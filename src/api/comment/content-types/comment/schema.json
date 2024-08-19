@@ -1,0 +1,27 @@
+{
+  "collectionName": "comments",
+  "info": {
+    "displayName": "Comment",
+    "description": "User comments on articles",
+    "singularName": "comment",
+    "pluralName": "comments"
+  },
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true
+    },
+    "article": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::article.article",
+      "required": true
+    },
+    "content": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

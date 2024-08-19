@@ -35,7 +35,15 @@ module.exports = {
         "config": {
           "policies": []
         }
-      }
+      },
+      {
+        method: "GET",
+        path: "/articles/:articleId/activities",
+        handler: "article.getArticleActivities",
+        // config: {
+        //   auth: false, // Change this to true if authentication is required
+        // },
+      },
     ],
   };
   

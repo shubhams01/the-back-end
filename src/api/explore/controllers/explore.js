@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const { createCoreController } = require("@strapi/strapi").factories;
 
@@ -12,21 +12,29 @@ module.exports = {
       const { limit } = ctx.query;
 
       // Fetch all articles
-      const articles = await strapi.entityService.findMany("api::article.article", {
-        fields: ["id", "Title", "Slug"],
-        populate: {
-          sections: {
-            populate: {
-              SectionImage: true,
-              NestedSections: {
-                populate: {
-                  NestedSectionImage: true,
+      const articles = await strapi.entityService.findMany(
+        // @ts-ignore
+        "api::article.article",
+        {
+          fields: ["id", "Title", "Slug"],
+          populate: {
+            sections: {
+              populate: {
+                SectionImage: true,
+                NestedSections: {
+                  populate: {
+                    NestedSectionImage: true,
+                  },
                 },
               },
             },
+            Image: true,
+            category: {
+              fields: ["Title", "Slug"],
+            },
           },
-        },
-      });
+        }
+      );
 
       // Shuffle articles
       const shuffled = articles.sort(() => 0.5 - Math.random());
@@ -34,8 +42,29 @@ module.exports = {
       // Return limited random articles
       const randomArticles = limit ? shuffled.slice(0, limit) : shuffled;
 
+      // Include the count of likes and comments
+      const articlesWithCounts = await Promise.all(
+        randomArticles.map(async (article) => {
+          const likesCount = await strapi.db.query("api::like.like").count({
+            where: { article: article.id },
+          });
+
+          const commentsCount = await strapi.db
+            .query("api::comment.comment")
+            .count({
+              where: { article: article.id },
+            });
+
+          return {
+            ...article,
+            likesCount,
+            commentsCount,
+          };
+        })
+      );
+
       // Set the response body
-      ctx.body = randomArticles;
+      ctx.body = articlesWithCounts;
     } catch (err) {
       // Log the error to console
       console.error("Error fetching random articles:", err);
@@ -53,31 +82,55 @@ module.exports = {
       const { id } = ctx.params;
 
       // Fetch the article by ID with specified fields and populate sections, Image, and nested sections
-      const article = await strapi.entityService.findOne("api::article.article", id, {
-        fields: ["id", "Title", "Slug"],
-        populate: {
-          sections: {
-            populate: {
-              SectionImage: true,
-              NestedSections: {
-                populate: {
-                  NestedSectionImage: true,
+      const article = await strapi.entityService.findOne(
+        // @ts-ignore
+        "api::article.article",
+        id,
+        {
+          fields: ["id", "Title", "Slug"],
+          populate: {
+            sections: {
+              populate: {
+                SectionImage: true,
+                NestedSections: {
+                  populate: {
+                    NestedSectionImage: true,
+                  },
                 },
               },
             },
+            Image: true,
+            category: {
+              fields: ["Title", "Slug"],
+            },
           },
-          category: true,
-        },
+        }
+      );
+
+      if (!article) {
+        ctx.body = "No article found";
+        return;
+      }
+
+      // Include the count of likes and comments
+      const likesCount = await strapi.db.query("api::like.like").count({
+        where: { article: article.id },
       });
 
+      const commentsCount = await strapi.db
+        .query("api::comment.comment")
+        .count({
+          where: { article: article.id },
+        });
+
+      const articleWithCounts = {
+        ...article,
+        likesCount,
+        commentsCount,
+      };
+
       // Set the response body
-      if(article) {
-        
-        ctx.body = article;
-      }
-      else {
-        ctx.body = "No article found"
-      }
+      ctx.body = articleWithCounts;
     } catch (err) {
       // Log the error to console
       console.error("Error fetching article:", err);

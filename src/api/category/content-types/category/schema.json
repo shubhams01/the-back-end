@@ -20,18 +20,18 @@
       "targetField": "Title",
       "required": true
     },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "articles": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::article.article",
-      "mappedBy": "category"
-    },
-    "image": {
-      "allowedTypes": [
-        "images"
-      ],
-      "type": "media",
-      "multiple": false
+      "target": "api::article.article"
     }
   }
 }

@@ -1,0 +1,23 @@
+{
+  "collectionName": "saves",
+  "info": {
+    "displayName": "Save",
+    "description": "User saves on articles",
+    "singularName": "save",
+    "pluralName": "saves"
+  },
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true
+    },
+    "article": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::article.article",
+      "required": true
+    }
+  }
+}

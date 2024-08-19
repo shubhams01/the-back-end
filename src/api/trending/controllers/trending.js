@@ -7,10 +7,10 @@ module.exports = {
       const limit = ctx.query.limit || 10;
 
       // Fetch articles sorted by views in descending order
+      // @ts-ignore
       const trendingArticles = await strapi.entityService.findMany('api::article.article', {
-        sort: { views: 'desc' },
         limit: limit,
-        fields: ['id', 'Title', 'Slug', 'views', 'createdAt'],
+        fields: ['id', 'Title', 'Slug'],
         populate: {
           sections: {
             populate: {
