@@ -6,6 +6,7 @@
 
 const { createCoreController } = require("@strapi/strapi").factories;
 
+// @ts-ignore
 module.exports = createCoreController("api::article.article", ({ strapi }) => ({
   async findMany(ctx) {
     try {
@@ -14,6 +15,7 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
 
       // Fetch all articles
       const articles = await strapi.entityService.findMany(
+        // @ts-ignore
         "api::article.article",
         {
           fields: ["id", "Title", "Slug"],
@@ -87,6 +89,7 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
 
       // Fetch the article by ID with specified fields and populate sections, Image, likes, comments, and nested sections
       const article = await strapi.entityService.findOne(
+        // @ts-ignore
         "api::article.article",
         id,
         {
@@ -162,6 +165,7 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
 
       // Fetch articles for the specified category
       const articles = await strapi.entityService.findMany(
+        // @ts-ignore
         "api::article.article",
         {
           filters: {

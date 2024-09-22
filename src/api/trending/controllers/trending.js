@@ -7,7 +7,6 @@ module.exports = {
       const limit = ctx.query.limit || 10;
 
       // Fetch articles sorted by views in descending order
-      // @ts-ignore
       const trendingArticles = await strapi.entityService.findMany('api::article.article', {
         limit: limit,
         fields: ['id', 'Title', 'Slug'],
@@ -29,8 +28,17 @@ module.exports = {
         },
       });
 
+      // Map through the articles to format the response
+      const formattedTrendingArticles = trendingArticles.map(article => ({
+        id: article.id,
+        title: article.Title,
+        slug: article.Slug,
+        category: article.category ? article.category.Title : null,
+        imageUrl: article.Image[0].formats.large?.url,
+      }));
+
       // Set the response body
-      ctx.body = trendingArticles;
+      ctx.body = formattedTrendingArticles;
     } catch (err) {
       // Log the error to console
       console.error("Error fetching trending articles:", err);

@@ -5,7 +5,6 @@ module.exports = {
   fetchLatestFromEachCategory: async (ctx, next) => {
     try {
       // Fetch all categories
-      // @ts-ignore
       const categories = await strapi.entityService.findMany('api::category.category', {
         fields: ['id', 'Title'],
       });
@@ -15,7 +14,6 @@ module.exports = {
 
       // Fetch the latest article for each category
       for (const category of categories) {
-        // @ts-ignore
         const latestArticle = await strapi.entityService.findMany('api::article.article', {
           filters: { category: category.id },
           sort: { createdAt: 'desc' },
@@ -40,10 +38,13 @@ module.exports = {
         });
 
         if (latestArticle.length > 0) {
+          const article = latestArticle[0];
           latestArticles.push({
-            // @ts-ignore
-            category: category.Title,
-            ...latestArticle[0],
+            id: article.id,
+            title: article.Title,
+            slug: article.Slug,
+            category: article.category ? article.category.Title : null,
+            imageUrl: article.Image[0].formats.large?.url,
           });
         }
       }
