@@ -1,5 +1,6 @@
 "use strict";
 
+// @ts-ignore
 const { createCoreController } = require("@strapi/strapi").factories;
 
 /**
@@ -7,6 +8,7 @@ const { createCoreController } = require("@strapi/strapi").factories;
  */
 
 module.exports = {
+  // @ts-ignore
   random: async (ctx, next) => {
     try {
       const { limit } = ctx.query;
@@ -46,20 +48,27 @@ module.exports = {
       const articlesWithCounts = await Promise.all(
         randomArticles.map(async (article) => {
           const likesCount = await strapi.db.query("api::like.like").count({
+            // @ts-ignore
             where: { article: article.id },
           });
 
           const commentsCount = await strapi.db
             .query("api::comment.comment")
             .count({
+              // @ts-ignore
               where: { article: article.id },
             });
 
           return {
+            // @ts-ignore
             id: article.id,
+            // @ts-ignore
             title: article.Title,
+            // @ts-ignore
             slug: article.Slug,
+            // @ts-ignore
             category: article.category.Title,
+            // @ts-ignore
             imageUrl: article.Image[0].formats.large.url,
             likesCount,
             commentsCount,
@@ -81,6 +90,7 @@ module.exports = {
     }
   },
 
+  // @ts-ignore
   findOne: async (ctx, next) => {
     try {
       const { id } = ctx.params;
@@ -118,20 +128,27 @@ module.exports = {
 
       // Include the count of likes and comments
       const likesCount = await strapi.db.query("api::like.like").count({
+        // @ts-ignore
         where: { article: article.id },
       });
 
       const commentsCount = await strapi.db
         .query("api::comment.comment")
         .count({
+          // @ts-ignore
           where: { article: article.id },
         });
 
       const articleWithCounts = {
+        // @ts-ignore
         id: article.id,
+        // @ts-ignore
         title: article.Title,
+        // @ts-ignore
         slug: article.Slug,
+        // @ts-ignore
         category: article.category.Title,
+        // @ts-ignore
         imageUrl: article.Image[0].formats.large.url,
         likesCount,
         commentsCount,
