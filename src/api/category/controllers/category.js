@@ -20,7 +20,6 @@ module.exports = createCoreController(
           }
         );
 
-        // Map through categories to ensure image URLs are included
         const formattedCategories = categories.map((category) => ({
           id: category.id,
           Title: category.Title,
@@ -28,10 +27,8 @@ module.exports = createCoreController(
           Image: category.image.formats.large.url,
         }));
 
-        // Send the formatted response
         ctx.body = formattedCategories;
       } catch (err) {
-        // Log and return the error message
         console.error("Error fetching categories:", err);
         ctx.body = {
           message: "An error occurred while fetching categories.",
