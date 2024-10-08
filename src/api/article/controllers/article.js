@@ -13,88 +13,11 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
       const userId = ctx.state.user?.id;
 
       // Fetch all articles
-      const articles = await strapi.entityService.findMany("api::article.article", {
-        fields: ["id", "Title", "Slug"],
-        populate: {
-          sections: {
-            populate: {
-              SectionImage: true,
-              NestedSections: {
-                populate: {
-                  NestedSectionImage: true,
-                },
-              },
-            },
-          },
-          Image: true,
-          category: true,
-        },
-      });
-
-      // Include the count of likes and comments
-      const articlesWithCounts = await Promise.all(
-        articles.map(async (article) => {
-          const likesCount = await strapi.db.query("api::like.like").count({
-            // @ts-ignore
-            where: { article: article.id },
-          });
-
-          const commentsCount = await strapi.db.query("api::comment.comment").count({
-            // @ts-ignore
-            where: { article: article.id },
-          });
-
-          const isLiked = userId
-            ? (await strapi.db.query("api::like.like").count({
-                // @ts-ignore
-                where: { article: article.id, user: userId },
-              })) > 0
-            : false;
-
-          const isSaved = userId
-            ? (await strapi.db.query("api::save.save").count({
-                // @ts-ignore
-                where: { article: article.id, user: userId },
-              })) > 0
-            : false;
-
-          return {
-            // @ts-ignore
-            ...articles,
-            // @ts-ignore
-            id: article.id,
-            // @ts-ignore
-            title: article.Title,
-            // @ts-ignore
-            slug: article.Slug,
-            // @ts-ignore
-            category: article.category?.Title || null,
-            // @ts-ignore
-            imageUrl: article.Image?.[0]?.formats?.large?.url || null,
-            likesCount,
-            commentsCount,
-            isLiked,
-            isSaved,
-          };
-        })
-      );
-
-      ctx.body = articlesWithCounts;
-    } catch (err) {
-      console.error("Error fetching articles:", err);
-      ctx.body = { message: "An error occurred while fetching articles.", error: err };
-    }
-  },
-
-  async findOne(ctx) {
-    try {
-        const { id } = ctx.params;
-        const userId = ctx.state.user?.id;
-
-        // Fetch the article by ID
-        const article = await strapi.entityService.findOne("api::article.article", id, {
-            fields: ["id", "Title", "Slug"],
-            populate: {
+      const articles = await strapi.entityService.findMany(
+        "api::article.article",
+        {
+          fields: ["id", "Title", "Slug"],
+          populate: {
             sections: {
               populate: {
                 SectionImage: true,
@@ -108,84 +31,8 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
             Image: true,
             category: true,
           },
-        });
-
-        // Include the count of likes and comments
-        const likesCount = await strapi.db.query("api::like.like").count({
-            // @ts-ignore
-            where: { article: article.id },
-        });
-
-        const commentsCount = await strapi.db.query("api::comment.comment").count({
-            // @ts-ignore
-            where: { article: article.id },
-        });
-
-        const isLiked = userId
-            ? (await strapi.db.query("api::like.like").count({
-                // @ts-ignore
-                where: { article: article.id, user: userId },
-            })) > 0
-            : false;
-
-        const isSaved = userId
-            ? (await strapi.db.query("api::save.save").count({
-                // @ts-ignore
-                where: { article: article.id, user: userId },
-            })) > 0
-            : false;
-
-        const articleWithCounts = {
-            // @ts-ignore
-            id: article.id,
-            // @ts-ignore
-            title: article.Title,
-            // @ts-ignore
-            slug: article.Slug,
-            // @ts-ignore
-            category: article.category?.Title || null,
-            // @ts-ignore
-            imageUrl: article.Image?.[0]?.formats?.large?.url || null,
-            article,
-            likesCount,
-            commentsCount,
-            isLiked,
-            isSaved,
-        };
-
-        ctx.send(articleWithCounts);
-    } catch (error) {
-        ctx.throw(500, error);
-    }
-}
-,
-
-  async getArticlesByCategory(ctx) {
-    try {
-      const { category } = ctx.params;
-      const userId = ctx.state.user?.id;
-
-      // Fetch articles by category
-      const articles = await strapi.entityService.findMany("api::article.article", {
-        filters: {
-          category: { Title: { $containsi: category } },
-        },
-        fields: ["id", "Title", "Slug"],
-        populate: {
-          sections: {
-            populate: {
-              SectionImage: true,
-              NestedSections: {
-                populate: {
-                  NestedSectionImage: true,
-                },
-              },
-            },
-          },
-          Image: true,
-          category: { fields: ["Title", "Slug"] },
-        },
-      });
+        }
+      );
 
       // Include the count of likes and comments
       const articlesWithCounts = await Promise.all(
@@ -216,15 +63,7 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
 
           return {
             // @ts-ignore
-            id: article.id,
-            // @ts-ignore
-            title: article.Title,
-            // @ts-ignore
-            slug: article.Slug,
-            // @ts-ignore
-            category: article.category?.Title || null,
-            // @ts-ignore
-            imageUrl: article.Image?.[0]?.formats?.large?.url || null,
+            ...article,
             likesCount,
             commentsCount,
             isLiked,
@@ -235,8 +74,182 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
 
       ctx.body = articlesWithCounts;
     } catch (err) {
+      // Log the error to console
+      console.error("Error fetching articles:", err);
+
+      // Set the response body to the error message
+      ctx.body = {
+        message: "An error occurred while fetching articles.",
+        error: err,
+      };
+    }
+  },
+
+  async findOne(ctx) {
+    try {
+      const { id } = ctx.params;
+      const userId = ctx.state.user?.id;
+
+      // Fetch the article by ID with specified fields and populate sections, Image, likes, comments, and nested sections
+      const article = await strapi.entityService.findOne(
+        "api::article.article",
+        id,
+        {
+          fields: ["id", "Title", "Slug"],
+          populate: {
+            sections: {
+              populate: {
+                SectionImage: true,
+                NestedSections: {
+                  populate: {
+                    NestedSectionImage: true,
+                  },
+                },
+              },
+              category: true,
+            },
+          },
+        }
+      );
+
+      // Include the count of likes and comments
+      const likesCount = await strapi.db.query("api::like.like").count({
+        // @ts-ignore
+        where: { article: article.id },
+      });
+
+      const commentsCount = await strapi.db.query("api::comment.comment").count({
+        // @ts-ignore
+        where: { article: article.id },
+      });
+
+      const isLiked = userId
+        ? (await strapi.db.query("api::like.like").count({
+            // @ts-ignore
+            where: { article: article.id, user: userId },
+          })) > 0
+        : false;
+
+      const isSaved = userId
+        ? (await strapi.db.query("api::save.save").count({
+            // @ts-ignore
+            where: { article: article.id, user: userId },
+          })) > 0
+        : false;
+
+      const articleWithCounts = {
+        // @ts-ignore
+        ...article,
+        likesCount,
+        commentsCount,
+        isLiked,
+        isSaved,
+      };
+
+      // Set the response body
+      if (article) {
+        ctx.body = articleWithCounts;
+      } else {
+        ctx.body = "No article found";
+      }
+    } catch (err) {
+      // Log the error to console
+      console.error("Error fetching article:", err);
+
+      // Set the response body to the error message
+      ctx.body = {
+        message: "An error occurred while fetching the article.",
+        error: err,
+      };
+    }
+  },
+
+  async getArticlesByCategory(ctx) {
+    try {
+      // Extract category ID from the request parameters
+      const { category } = ctx.params;
+      const userId = ctx.state.user?.id;
+
+      // Fetch articles for the specified category
+      const articles = await strapi.entityService.findMany(
+        "api::article.article",
+        {
+          filters: {
+            category: {
+              Title: {
+                $containsi: category, // Case-insensitive contains filter
+              },
+            },
+          },
+          fields: ["id", "Title", "Slug"],
+          populate: {
+            sections: {
+              populate: {
+                SectionImage: true,
+                NestedSections: {
+                  populate: {
+                    NestedSectionImage: true,
+                  },
+                },
+              },
+            },
+            Image: true,
+            category: {
+              fields: ['Title', 'Slug'],
+            }
+          },
+        }
+      );
+
+      // Include the count of likes and comments
+      const articlesWithCounts = await Promise.all(
+        articles.map(async (article) => {
+          const likesCount = await strapi.db.query("api::like.like").count({
+            // @ts-ignore
+            where: { article: article.id },
+          });
+
+          const commentsCount = await strapi.db.query("api::comment.comment").count({
+            // @ts-ignore
+            where: { article: article.id },
+          });
+
+          const isLiked = userId
+            ? (await strapi.db.query("api::like.like").count({
+                // @ts-ignore
+                where: { article: article.id, user: userId },
+              })) > 0
+            : false;
+
+          const isSaved = userId
+            ? (await strapi.db.query("api::save.save").count({
+                // @ts-ignore
+                where: { article: article.id, user: userId },
+              })) > 0
+            : false;
+
+          return {
+            // @ts-ignore
+            ...article,
+            likesCount,
+            commentsCount,
+            isLiked,
+            isSaved,
+          };
+        })
+      );
+
+      // Set the response body
+      ctx.body = articlesWithCounts;
+    } catch (err) {
+      // Log the error to console
       console.error("Error fetching articles by category:", err);
-      ctx.body = { message: "An error occurred while fetching articles by category.", error: err };
+
+      // Set the response body to the error message
+      ctx.body = {
+        message: "An error occurred while fetching articles by category.",
+        error: err,
+      };
     }
   },
 
@@ -254,17 +267,18 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
         where: { article: articleId },
       });
 
-      const isLiked = userId
-        ? (await strapi.db.query("api::like.like").count({
-            where: { article: articleId, user: userId },
-          })) > 0
-        : false;
+      let isLiked = false;
+      let isSaved = false;
 
-      const isSaved = userId
-        ? (await strapi.db.query("api::save.save").count({
-            where: { article: articleId, user: userId },
-          })) > 0
-        : false;
+      if (userId) {
+        isLiked = await strapi.db.query("api::like.like").count({
+          where: { article: articleId, user: userId },
+        }) > 0;
+
+        isSaved = await strapi.db.query("api::save.save").count({
+          where: { article: articleId, user: userId },
+        }) > 0;
+      }
 
       const articleActivities = {
         likesCount,
@@ -273,10 +287,18 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
         isSaved,
       };
 
+      // Set the response body
       ctx.body = articleActivities;
     } catch (err) {
+      // Log the error to console
       console.error("Error fetching article activities:", err);
-      ctx.body = { message: "An error occurred while fetching the article activities.", error: err };
+
+      // Set the response body to the error message
+      ctx.body = {
+        message: "An error occurred while fetching the article activities.",
+        error: err,
+      };
     }
   },
+  
 }));

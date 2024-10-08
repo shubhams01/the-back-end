@@ -44,7 +44,7 @@ module.exports = {
       // Return limited random articles
       const randomArticles = limit ? shuffled.slice(0, limit) : shuffled;
 
-      // Include the count of likes and comments, and format the response
+      // Include the count of likes and comments
       const articlesWithCounts = await Promise.all(
         randomArticles.map(async (article) => {
           const likesCount = await strapi.db.query("api::like.like").count({
@@ -61,7 +61,7 @@ module.exports = {
 
           return {
             // @ts-ignore
-            ...articles,
+            ...article,
             likesCount,
             commentsCount,
           };
@@ -132,7 +132,8 @@ module.exports = {
         });
 
       const articleWithCounts = {
-        article,
+        // @ts-ignore
+        ...article,
         likesCount,
         commentsCount,
       };
