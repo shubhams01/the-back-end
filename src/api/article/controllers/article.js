@@ -61,6 +61,16 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
           return {
             // @ts-ignore
             ...articles,
+            // @ts-ignore
+            id: article.id,
+            // @ts-ignore
+            title: article.Title,
+            // @ts-ignore
+            slug: article.Slug,
+            // @ts-ignore
+            category: article.category?.Title || null,
+            // @ts-ignore
+            imageUrl: article.Image?.[0]?.formats?.large?.url || null,
             likesCount,
             commentsCount,
             isLiked,
@@ -127,6 +137,15 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
 
         const articleWithCounts = {
             // @ts-ignore
+            id: article.id,
+            // @ts-ignore
+            title: article.Title,
+            // @ts-ignore
+            slug: article.Slug,
+            // @ts-ignore
+            category: article.category?.Title || null,
+            // @ts-ignore
+            imageUrl: article.Image?.[0]?.formats?.large?.url || null,
             article,
             likesCount,
             commentsCount,
