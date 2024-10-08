@@ -61,15 +61,7 @@ module.exports = {
 
           return {
             // @ts-ignore
-            id: article.id,
-            // @ts-ignore
-            title: article.Title,
-            // @ts-ignore
-            slug: article.Slug,
-            // @ts-ignore
-            category: article.category.Title,
-            // @ts-ignore
-            imageUrl: article.Image[0].formats.large.url,
+            ...articles,
             likesCount,
             commentsCount,
           };
@@ -140,16 +132,7 @@ module.exports = {
         });
 
       const articleWithCounts = {
-        // @ts-ignore
-        id: article.id,
-        // @ts-ignore
-        title: article.Title,
-        // @ts-ignore
-        slug: article.Slug,
-        // @ts-ignore
-        category: article.category.Title,
-        // @ts-ignore
-        imageUrl: article.Image[0].formats.large.url,
+        article,
         likesCount,
         commentsCount,
       };
