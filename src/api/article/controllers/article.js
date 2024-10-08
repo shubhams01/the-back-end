@@ -60,6 +60,8 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
 
           return {
             // @ts-ignore
+            ...articles,
+            // @ts-ignore
             id: article.id,
             // @ts-ignore
             title: article.Title,
@@ -86,76 +88,69 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
 
   async findOne(ctx) {
     try {
-      const { id } = ctx.params;
-      const userId = ctx.state.user?.id;
+        const { id } = ctx.params;
+        const userId = ctx.state.user?.id;
 
-      // Fetch the article by ID
-      const article = await strapi.entityService.findOne("api::article.article", id, {
-        fields: ["id", "Title", "Slug"],
-        populate: {
-          sections: {
+        // Fetch the article by ID
+        const article = await strapi.entityService.findOne("api::article.article", id, {
+            fields: ["id", "Title", "Slug"],
             populate: {
-              SectionImage: true,
-              NestedSections: {
-                populate: {
-                  NestedSectionImage: true,
+            sections: {
+              populate: {
+                SectionImage: true,
+                NestedSections: {
+                  populate: {
+                    NestedSectionImage: true,
+                  },
                 },
               },
             },
             Image: true,
             category: true,
           },
-        },
-      });
+        });
 
-      // Include the count of likes and comments
-      const likesCount = await strapi.db.query("api::like.like").count({
-        // @ts-ignore
-        where: { article: article.id },
-      });
-
-      const commentsCount = await strapi.db.query("api::comment.comment").count({
-        // @ts-ignore
-        where: { article: article.id },
-      });
-
-      const isLiked = userId
-        ? (await strapi.db.query("api::like.like").count({
+        // Include the count of likes and comments
+        const likesCount = await strapi.db.query("api::like.like").count({
             // @ts-ignore
-            where: { article: article.id, user: userId },
-          })) > 0
-        : false;
+            where: { article: article.id },
+        });
 
-      const isSaved = userId
-        ? (await strapi.db.query("api::save.save").count({
+        const commentsCount = await strapi.db.query("api::comment.comment").count({
             // @ts-ignore
-            where: { article: article.id, user: userId },
-          })) > 0
-        : false;
+            where: { article: article.id },
+        });
 
-      const articleWithCounts = {
-        // @ts-ignore
-        id: article.id,
-        // @ts-ignore
-        title: article.Title,
-        // @ts-ignore
-        slug: article.Slug,
-        // @ts-ignore
-        category: article.category?.Title || null,
-        // @ts-ignore
-        imageUrl: article.Image?.[0]?.formats?.large?.url || null,
-        likesCount,
-        commentsCount,
-        isLiked,
-        isSaved,
-      };
+        const isLiked = userId
+            ? (await strapi.db.query("api::like.like").count({
+                // @ts-ignore
+                where: { article: article.id, user: userId },
+            })) > 0
+            : false;
 
-      ctx.body = articleWithCounts || "No article found";
-    } catch (err) {
-      console.error("Error fetching article:", err);
-      ctx.body = { message: "An error occurred while fetching the article.", error: err };
+        const isSaved = userId
+            ? (await strapi.db.query("api::save.save").count({
+                // @ts-ignore
+                where: { article: article.id, user: userId },
+            })) > 0
+            : false;
+
+        // Filter to include only large images
+        const articleWithCounts = {
+            // @ts-ignore
+            ...article,
+            likesCount,
+            commentsCount,
+            isLiked,
+            isSaved,
+        };
+
+        ctx.send(articleWithCounts);
+    } catch (error) {
+        ctx.throw(500, error);
     }
-  },
+}
+,
 
   async getArticlesByCategory(ctx) {
     try {
