@@ -140,10 +140,10 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
       const articleWithCounts = {
         // @ts-ignore
         ...article,
-        likesCount,
-        commentsCount,
-        isLiked,
-        isSaved,
+        // likesCount,
+        // commentsCount,
+        // isLiked,
+        // isSaved,
       };
 
       // Set the response body
