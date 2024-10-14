@@ -7,7 +7,7 @@ module.exports = {
       const { limit } = ctx.query;
 
       // Fetch trending articles
-      const articlesList = await strapi.entityService.findMany('api::article.article', {
+      const articles = await strapi.entityService.findMany('api::article.article', {
         limit: limit,
         fields: ['id', 'Title', 'Slug'],
         populate: {
@@ -29,7 +29,7 @@ module.exports = {
       });
 
       // Map through the articles to format the response
-      const formattedArticles = articlesList.map(article => ({
+      const formattedArticles = articles.map(article => ({
         id: article.id,
         title: article.Title,
         slug: article.Slug,

@@ -4,6 +4,7 @@
  * article controller
  */
 
+// @ts-ignore
 const { createCoreController } = require("@strapi/strapi").factories;
 
 module.exports = createCoreController("api::article.article", ({ strapi }) => ({
@@ -140,10 +141,10 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
       const articleWithCounts = {
         // @ts-ignore
         ...article,
-        // likesCount,
-        // commentsCount,
-        // isLiked,
-        // isSaved,
+        likesCount,
+        commentsCount,
+        isLiked,
+        isSaved,
       };
 
       // Set the response body
@@ -201,46 +202,17 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
         }
       );
 
-      // Include the count of likes and comments
-      const articlesWithCounts = await Promise.all(
-        articles.map(async (article) => {
-          const likesCount = await strapi.db.query("api::like.like").count({
-            // @ts-ignore
-            where: { article: article.id },
-          });
-
-          const commentsCount = await strapi.db.query("api::comment.comment").count({
-            // @ts-ignore
-            where: { article: article.id },
-          });
-
-          const isLiked = userId
-            ? (await strapi.db.query("api::like.like").count({
-                // @ts-ignore
-                where: { article: article.id, user: userId },
-              })) > 0
-            : false;
-
-          const isSaved = userId
-            ? (await strapi.db.query("api::save.save").count({
-                // @ts-ignore
-                where: { article: article.id, user: userId },
-              })) > 0
-            : false;
-
-          return {
-            // @ts-ignore
-            ...article,
-            likesCount,
-            commentsCount,
-            isLiked,
-            isSaved,
-          };
-        })
-      );
+      // Map through the articles to format the response
+      const formattedArticles = articles.map(article => ({
+        id: article.id,
+        title: article.Title,
+        slug: article.Slug,
+        category: article.category ? article.category.Title : null,
+        imageUrl: article.Image[0]?.formats?.large?.url || null,
+      }));
 
       // Set the response body
-      ctx.body = articlesWithCounts;
+      ctx.body = formattedArticles;
     } catch (err) {
       // Log the error to console
       console.error("Error fetching articles by category:", err);
