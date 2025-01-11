@@ -9,4 +9,11 @@ module.exports = [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
+  {
+    name: 'strapi::cors',
+    config: {
+      origin: ['https://gyaanhub.io'], // List of allowed origins
+      headers: '*', // Allow all headers
+    },
+  },
 ];

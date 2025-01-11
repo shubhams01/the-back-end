@@ -6,7 +6,7 @@ module.exports = {
      handler: 'explore.random',
      config: {
        policies: [],
-       middlewares: ["api::explore.whitelist-ip"],
+      //  middlewares: ["api::explore.whitelist-ip"],
      },
     },    
   ],
