@@ -12,7 +12,7 @@ module.exports = [
   {
     name: 'strapi::cors',
     config: {
-      origin: ['https://gyaanhub.io'], // List of allowed origins
+      origin: ['https://gyaanhub.io', 'https://api.gyaanhub.io'], // List of allowed origins
       headers: '*', // Allow all headers
     },
   },
