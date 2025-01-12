@@ -8,4 +8,5 @@ module.exports = ({ env }) => ({
     populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
   },
   // url:'https://api.gyaanhub.io'
+  // url: 'http://localhost:1337'
 });
