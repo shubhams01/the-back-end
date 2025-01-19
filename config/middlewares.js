@@ -2,18 +2,23 @@ module.exports = [
   'strapi::logger',
   'strapi::errors',
   'strapi::security',
-  'strapi::cors',
+  {
+    name: 'strapi::cors',
+    config: {
+      origin: [
+        'http://localhost:3000', // Next.js frontend
+        'http://localhost:1337', // Strapi backend (optional for local requests)
+        'https://gyaanhub.io',  // Production frontend
+        'https://api.gyaanhub.io', // Production API
+      ],
+      headers: '*', // Allow all headers
+      methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow necessary HTTP methods
+    },
+  },
   'strapi::poweredBy',
   'strapi::query',
   'strapi::body',
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
-  {
-    name: 'strapi::cors',
-    config: {
-      origin: ['http://localhost:3000', 'http://localhost:1337', 'https://gyaanhub.io', 'https://api.gyaanhub.io'], // List of allowed origins
-      headers: '*', // Allow all headers
-    },
-  },
 ];
