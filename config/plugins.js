@@ -1,15 +1,20 @@
 // ./config/plugins.js
 module.exports = ({ env }) => ({
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET'),
+    },
+  },
     email: {
       config: {
         provider: 'nodemailer',
         providerOptions: {
-          host: 'smtp.hostinger.com', // Hostinger's SMTP server
+          host: 'smtp.hostinger.com', 
           port: 465, // Port number for TLS
           secure: true, // Use TLS
           auth: {
-            user: env('SMTP_USER'), // Your email address
-            pass: env('SMTP_PASS'), // Your email password
+            user: env('SMTP_USER'), 
+            pass: env('SMTP_PASS'), 
           },
         },
         settings: {
