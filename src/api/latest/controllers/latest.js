@@ -42,7 +42,8 @@ module.exports = {
         if (latestArticle.length > 0) {
           latestArticles.push({
             // @ts-ignore
-            category: category.Title,
+            categoryTitle: category.Title,
+            categorySlug: category.Slug,
             ...latestArticle[0],
           });
         }

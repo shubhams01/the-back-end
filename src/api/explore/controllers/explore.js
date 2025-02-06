@@ -1,5 +1,6 @@
 "use strict";
 
+// @ts-ignore
 const { createCoreController } = require("@strapi/strapi").factories;
 
 /**
@@ -9,14 +10,12 @@ const { createCoreController } = require("@strapi/strapi").factories;
 module.exports = {
   random: async (ctx, next) => {
     try {
-      const { limit } = ctx.query;
-
-      // Fetch all articles
+      // Fetch all articles sorted from recent to old
       const articles = await strapi.entityService.findMany(
         // @ts-ignore
         "api::article.article",
         {
-          fields: ["id", "Title", "Slug"],
+          fields: ["id", "Title", "Slug", "createdAt"],
           populate: {
             sections: {
               populate: {
@@ -36,15 +35,11 @@ module.exports = {
         }
       );
 
-      // Shuffle articles
-      const shuffled = articles.sort(() => 0.5 - Math.random());
 
-      // Return limited random articles
-      const randomArticles = limit ? shuffled.slice(0, limit) : shuffled;
 
       // Include the count of likes and comments
       const articlesWithCounts = await Promise.all(
-        randomArticles.map(async (article) => {
+        articles.map(async (article) => {
           const likesCount = await strapi.db.query("api::like.like").count({
             where: { article: article.id },
           });
@@ -63,15 +58,12 @@ module.exports = {
         })
       );
 
-      // Set the response body
       ctx.body = articlesWithCounts;
     } catch (err) {
-      // Log the error to console
-      console.error("Error fetching random articles:", err);
+      console.error("Error fetching recent articles:", err);
 
-      // Set the response body to the error message
       ctx.body = {
-        message: "An error occurred while fetching random articles.",
+        message: "An error occurred while fetching recent articles.",
         error: err,
       };
     }

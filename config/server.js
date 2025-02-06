@@ -9,4 +9,6 @@ module.exports = ({ env }) => ({
   },
   // url:'https://api.gyaanhub.io'
   // url: 'http://localhost:1337'
+  url: env("PUBLIC_URL", "https://api.gyaanhub.io"),
+
 });

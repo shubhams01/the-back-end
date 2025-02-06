@@ -207,7 +207,8 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
         id: article.id,
         title: article.Title,
         slug: article.Slug,
-        category: article.category ? article.category.Title : null,
+        categoryTitle: article.category.Title,
+        categorySlug: article.category.Slug,
         imageUrl: article.Image[0]?.formats?.large?.url || null,
       }));
 

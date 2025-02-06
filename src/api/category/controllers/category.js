@@ -1,5 +1,6 @@
 "use strict";
 
+// @ts-ignore
 const { createCoreController } = require("@strapi/strapi").factories;
 
 module.exports = createCoreController(
@@ -13,7 +14,7 @@ module.exports = createCoreController(
           // @ts-ignore
           "api::category.category",
           {
-            fields: ["id", "Title", "Slug"],
+            fields: ["id", "Title", "Slug", "description"],
             populate: {
               image: true,
             },
@@ -25,6 +26,7 @@ module.exports = createCoreController(
           Title: category.Title,
           Slug: category.Slug,
           Image: category.image.formats.large?.url,
+          description: category.description,
         }));
 
         ctx.body = formattedCategories;
