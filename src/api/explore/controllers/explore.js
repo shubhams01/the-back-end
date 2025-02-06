@@ -32,6 +32,7 @@ module.exports = {
               fields: ["Title", "Slug"],
             },
           },
+          sort: [{ createdAt: "desc" }],
         }
       );
 

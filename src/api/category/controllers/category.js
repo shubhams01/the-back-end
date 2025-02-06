@@ -14,7 +14,7 @@ module.exports = createCoreController(
           // @ts-ignore
           "api::category.category",
           {
-            fields: ["id", "Title", "Slug", "description"],
+            fields: ["id", "Title", "Slug"],
             populate: {
               image: true,
             },
@@ -26,7 +26,6 @@ module.exports = createCoreController(
           Title: category.Title,
           Slug: category.Slug,
           Image: category.image.formats.large?.url,
-          description: category.description,
         }));
 
         ctx.body = formattedCategories;
