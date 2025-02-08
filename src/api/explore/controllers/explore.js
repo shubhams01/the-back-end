@@ -18,11 +18,11 @@ module.exports = {
           fields: ["id", "Title", "Slug", "createdAt", "blurhash"],
           populate: {
             sections: {
-              fields: ["SectionImageBlurhash"],
+              // fields: ["SectionImageBlurhash"],
               populate: {
                 SectionImage: true,
                 NestedSections: {
-                  fields: ["NestedSectionImageBlurhash"],
+                  // fields: ["NestedSectionImageBlurhash"],
                   populate: {
                     NestedSectionImage: true,
                   },

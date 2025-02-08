@@ -100,10 +100,10 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
           populate: {
             sections: {
               populate: {
-                fields: ["SectionImageBlurhash"],
+               // fields: ["SectionImageBlurhash"],
                 SectionImage: true,
                 NestedSections: {
-                  fields: ["NestedSectionImageBlurhash"],
+                //  fields: ["NestedSectionImageBlurhash"],
                   populate: {
                     NestedSectionImage: true,
                   },
