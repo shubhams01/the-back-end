@@ -24,7 +24,7 @@ module.exports = createCoreController(
           id: category.id,
           Title: category.Title,
           Slug: category.Slug,
-          Image: category.image.formats.large?.url,
+          Image: category?.image?.formats?.large?.url,
           blurhash: category.blurhash,
         }));
 
