@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2025-02-06T20:33:09.888Z"
+    "x-generation-date": "2025-02-08T10:19:17.790Z"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -1623,9 +1623,15 @@
                                                 },
                                                 "NestedSectionDescription": {
                                                   "type": "string"
+                                                },
+                                                "NestedSectionImageBlurhash": {
+                                                  "type": "string"
                                                 }
                                               }
                                             }
+                                          },
+                                          "SectionImageBlurhash": {
+                                            "type": "string"
                                           }
                                         }
                                       }
@@ -1979,6 +1985,9 @@
                                         }
                                       }
                                     },
+                                    "blurhash": {
+                                      "type": "string"
+                                    },
                                     "createdAt": {
                                       "type": "string",
                                       "format": "date-time"
@@ -2116,6 +2125,9 @@
                 }
               }
             }
+          },
+          "blurhash": {
+            "type": "string"
           },
           "createdAt": {
             "type": "string",
@@ -2490,9 +2502,15 @@
                 },
                 "NestedSectionDescription": {
                   "type": "string"
+                },
+                "NestedSectionImageBlurhash": {
+                  "type": "string"
                 }
               }
             }
+          },
+          "SectionImageBlurhash": {
+            "type": "string"
           }
         }
       },
@@ -3690,9 +3708,15 @@
                                     },
                                     "NestedSectionDescription": {
                                       "type": "string"
+                                    },
+                                    "NestedSectionImageBlurhash": {
+                                      "type": "string"
                                     }
                                   }
                                 }
+                              },
+                              "SectionImageBlurhash": {
+                                "type": "string"
                               }
                             }
                           }
@@ -4519,6 +4543,9 @@
                               }
                             }
                           }
+                        },
+                        "blurhash": {
+                          "type": "string"
                         },
                         "createdAt": {
                           "type": "string",
@@ -6019,9 +6046,15 @@
                                                             },
                                                             "NestedSectionDescription": {
                                                               "type": "string"
+                                                            },
+                                                            "NestedSectionImageBlurhash": {
+                                                              "type": "string"
                                                             }
                                                           }
                                                         }
+                                                      },
+                                                      "SectionImageBlurhash": {
+                                                        "type": "string"
                                                       }
                                                     }
                                                   }
@@ -6374,6 +6407,9 @@
                                                       }
                                                     }
                                                   }
+                                                },
+                                                "blurhash": {
+                                                  "type": "string"
                                                 },
                                                 "createdAt": {
                                                   "type": "string",
@@ -7981,9 +8017,15 @@
                                                             },
                                                             "NestedSectionDescription": {
                                                               "type": "string"
+                                                            },
+                                                            "NestedSectionImageBlurhash": {
+                                                              "type": "string"
                                                             }
                                                           }
                                                         }
+                                                      },
+                                                      "SectionImageBlurhash": {
+                                                        "type": "string"
                                                       }
                                                     }
                                                   }
@@ -8336,6 +8378,9 @@
                                                       }
                                                     }
                                                   }
+                                                },
+                                                "blurhash": {
+                                                  "type": "string"
                                                 },
                                                 "createdAt": {
                                                   "type": "string",
@@ -10266,9 +10311,15 @@
                                                             },
                                                             "NestedSectionDescription": {
                                                               "type": "string"
+                                                            },
+                                                            "NestedSectionImageBlurhash": {
+                                                              "type": "string"
                                                             }
                                                           }
                                                         }
+                                                      },
+                                                      "SectionImageBlurhash": {
+                                                        "type": "string"
                                                       }
                                                     }
                                                   }
@@ -10621,6 +10672,9 @@
                                                       }
                                                     }
                                                   }
+                                                },
+                                                "blurhash": {
+                                                  "type": "string"
                                                 },
                                                 "createdAt": {
                                                   "type": "string",
@@ -11534,7 +11588,8 @@
             "deprecated": false,
             "required": false,
             "schema": {
-              "type": "object"
+              "type": "object",
+              "additionalProperties": true
             },
             "style": "deepObject"
           },

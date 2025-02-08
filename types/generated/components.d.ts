@@ -28,11 +28,13 @@ export interface SharedNestedSecttion extends Schema.Component {
   info: {
     displayName: 'NestedSecttion';
     icon: 'layer';
+    description: '';
   };
   attributes: {
     NestedSectionTitle: Attribute.Text;
-    NestedSectionImage: Attribute.Media;
+    NestedSectionImage: Attribute.Media & Attribute.Required;
     NestedSectionDescription: Attribute.Text;
+    NestedSectionImageBlurhash: Attribute.String;
   };
 }
 
@@ -45,9 +47,10 @@ export interface SharedSection extends Schema.Component {
   };
   attributes: {
     SectionTitle: Attribute.Text;
-    SectionImage: Attribute.Media;
+    SectionImage: Attribute.Media & Attribute.Required;
     SectionDescription: Attribute.Text;
     NestedSections: Attribute.Component<'shared.nested-secttion', true>;
+    SectionImageBlurhash: Attribute.String;
   };
 }
 

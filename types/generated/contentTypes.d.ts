@@ -869,6 +869,7 @@ export interface ApiArticleArticle extends Schema.CollectionType {
       'oneToOne',
       'api::category.category'
     >;
+    blurhash: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

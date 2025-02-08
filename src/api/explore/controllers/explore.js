@@ -15,12 +15,14 @@ module.exports = {
         // @ts-ignore
         "api::article.article",
         {
-          fields: ["id", "Title", "Slug", "createdAt"],
+          fields: ["id", "Title", "Slug", "createdAt", "blurhash"],
           populate: {
             sections: {
+              fields: ["SectionImageBlurhash"],
               populate: {
                 SectionImage: true,
                 NestedSections: {
+                  fields: ["NestedSectionImageBlurhash"],
                   populate: {
                     NestedSectionImage: true,
                   },

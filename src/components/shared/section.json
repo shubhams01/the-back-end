@@ -13,7 +13,7 @@
     "SectionImage": {
       "type": "media",
       "multiple": false,
-      "required": false,
+      "required": true,
       "allowedTypes": [
         "images",
         "files",
@@ -29,6 +29,9 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.nested-secttion"
+    },
+    "SectionImageBlurhash": {
+      "type": "string"
     }
   }
 }
