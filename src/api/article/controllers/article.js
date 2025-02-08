@@ -96,12 +96,14 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
         "api::article.article",
         id,
         {
-          fields: ["id", "Title", "Slug"],
+          fields: ["id", "Title", "Slug", 'blurhash'],
           populate: {
             sections: {
               populate: {
+                fields: ["SectionImageBlurhash"],
                 SectionImage: true,
                 NestedSections: {
+                  fields: ["NestedSectionImageBlurhash"],
                   populate: {
                     NestedSectionImage: true,
                   },
@@ -182,12 +184,14 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
               },
             },
           },
-          fields: ["id", "Title", "Slug"],
+          fields: ["id", "Title", "Slug", 'blurhash'],
           populate: {
             sections: {
               populate: {
+                fields: ["SectionImageBlurhash"],
                 SectionImage: true,
                 NestedSections: {
+                  fields: ["NestedSectionImageBlurhash"],
                   populate: {
                     NestedSectionImage: true,
                   },
@@ -209,7 +213,8 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
         slug: article.Slug,
         categoryTitle: article.category.Title,
         categorySlug: article.category.Slug,
-        imageUrl: article.Image[0]?.formats?.large?.url || null,
+        imageUrl: article.Image[0]?.formats?.large?.url,
+        blurhash: article.blurhash,
       }));
 
       // Set the response body

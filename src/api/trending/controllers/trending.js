@@ -10,13 +10,15 @@ module.exports = {
       // @ts-ignore
       const trendingArticles = await strapi.entityService.findMany('api::article.article', {
         limit: limit,
-        fields: ['id', 'Title', 'Slug'],
+        fields: ['id', 'Title', 'Slug', 'blurhash'],
         populate: {
           sections: {
+            fields: ["SectionImageBlurhash"],
             populate: {
               SectionImage: true,
               NestedSections: {
                 populate: {
+                  fields: ["NestedSectionImageBlurhash"],
                   NestedSectionImage: true,
                 },
               },

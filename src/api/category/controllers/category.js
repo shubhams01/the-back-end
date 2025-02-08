@@ -9,12 +9,11 @@ module.exports = createCoreController(
   ({ strapi }) => ({
     async find(ctx) {
       try {
-        // Fetch all categories with id, Title, Slug, and associated image
         const categories = await strapi.entityService.findMany(
           // @ts-ignore
           "api::category.category",
           {
-            fields: ["id", "Title", "Slug"],
+            fields: ["id", "Title", "Slug", 'blurhash'],
             populate: {
               image: true,
             },
@@ -26,6 +25,7 @@ module.exports = createCoreController(
           Title: category.Title,
           Slug: category.Slug,
           Image: category.image.formats.large?.url,
+          blurhash: category.blurhash,
         }));
 
         ctx.body = formattedCategories;

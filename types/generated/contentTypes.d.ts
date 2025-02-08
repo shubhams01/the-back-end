@@ -902,12 +902,13 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   attributes: {
     Title: Attribute.String;
     Slug: Attribute.UID<'api::category.category', 'Title'> & Attribute.Required;
-    image: Attribute.Media;
+    image: Attribute.Media & Attribute.Required;
     articles: Attribute.Relation<
       'api::category.category',
       'oneToMany',
       'api::article.article'
     >;
+    blurhash: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

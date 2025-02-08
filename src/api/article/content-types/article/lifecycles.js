@@ -3,30 +3,6 @@ const path = require("path");
 const { generateBlurhash } = require("../../../../utils/blurhash");
 
 module.exports = {
-  // async beforeCreate(event) {
-  //   const { data } = event.params;
-  //   console.log("blurhash ", data.Image, data.Image[0].id);
-  //   if (data.Image && data.Image[0].id) {
-  //     const image = await strapi.entityService.findOne(
-  //       "plugin::upload.file",
-  //       data.Image[0].id
-  //     );typeof
-  //     console.log("images ", image.url, __dirname);
-  //     if (image && image.url) {
-  //       const imagePath = path.join(strapi.dirs.static.public, image.url);
-
-  //       console.log("Processing Image:", imagePath);
-
-  //       const blurhash = await getBlurhash(imagePath);
-  //       console.log("BlurHash Generated:", blurhash);
-  //       if (blurhash) {
-  //         data.blurhash = blurhash;
-  //       } else {
-  //         console.error("Failed to generate BlurHash");
-  //       }
-  //     }
-  //   }
-  // },
 
   async afterCreate(event) {
     const data = event.result;

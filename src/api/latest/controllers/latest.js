@@ -20,12 +20,14 @@ module.exports = {
           filters: { category: category.id },
           sort: { createdAt: 'desc' },
           limit: 1,
-          fields: ['id', 'Title', 'Slug', 'createdAt'],
+          fields: ['id', 'Title', 'Slug', 'createdAt', 'blurhash'],
           populate: {
             sections: {
+              fields: ["SectionImageBlurhash"],
               populate: {
                 SectionImage: true,
                 NestedSections: {
+                  fields: ["NestedSectionImageBlurhash"],
                   populate: {
                     NestedSectionImage: true,
                   },
