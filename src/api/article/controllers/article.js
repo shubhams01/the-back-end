@@ -203,6 +203,7 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
               fields: ['Title', 'Slug'],
             }
           },
+          sort: [{ createdAt: "desc" }],
         }
       );
 
