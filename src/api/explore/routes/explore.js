@@ -3,11 +3,7 @@ module.exports = {
     {
      method: 'GET',
      path: '/explore',
-     handler: 'explore.random',
-     config: {
-       policies: [],
-      //  middlewares: ["api::explore.whitelist-ip"],
-     },
+     handler: 'explore.random'
     },    
   ],
 };

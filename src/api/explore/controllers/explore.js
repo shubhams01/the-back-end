@@ -2,15 +2,30 @@
 
 // @ts-ignore
 const { createCoreController } = require("@strapi/strapi").factories;
+const { caching } = require("../../../plugins/cache/server/services");
+// @ts-ignore
+const {
+  client,
+} = require("../../../plugins/cache/server/services/redis-client");
 
-/**
- * A set of functions called "actions" for `explore`
- */
+const cacheableResource = caching(
+  "articles",
+  parseInt(process.env.DEFAULT_CACHE_DURATION)
+);
 
 module.exports = {
-  random: async (ctx, next) => {
+  random: cacheableResource(async (ctx) => {
     try {
-      // Fetch all articles sorted from recent to old
+      const cacheKey = "articles";
+      const cachedData = await client.get(cacheKey);
+
+      if (cachedData) {
+        console.log("Cache HIT! ✅");
+        return JSON.parse(cachedData);
+      }
+
+      console.log("Cache MISS ❌, Fetching from DB");
+
       const articles = await strapi.entityService.findMany(
         // @ts-ignore
         "api::article.article",
@@ -18,11 +33,9 @@ module.exports = {
           fields: ["id", "Title", "Slug", "createdAt", "blurhash"],
           populate: {
             sections: {
-              // fields: ["SectionImageBlurhash"],
               populate: {
                 SectionImage: true,
                 NestedSections: {
-                  // fields: ["NestedSectionImageBlurhash"],
                   populate: {
                     NestedSectionImage: true,
                   },
@@ -38,9 +51,6 @@ module.exports = {
         }
       );
 
-
-
-      // Include the count of likes and comments
       const articlesWithCounts = await Promise.all(
         articles.map(async (article) => {
           const likesCount = await strapi.db.query("api::like.like").count({
@@ -61,6 +71,11 @@ module.exports = {
         })
       );
 
+      // Set Cache
+      await client.set(cacheKey, JSON.stringify(articlesWithCounts), "EX", 300);
+
+      console.log("✅ Data Cached Successfully!");
+
       ctx.body = articlesWithCounts;
     } catch (err) {
       console.error("Error fetching recent articles:", err);
@@ -70,71 +85,5 @@ module.exports = {
         error: err,
       };
     }
-  },
-
-  findOne: async (ctx, next) => {
-    try {
-      const { id } = ctx.params;
-
-      // Fetch the article by ID with specified fields and populate sections, Image, and nested sections
-      const article = await strapi.entityService.findOne(
-        // @ts-ignore
-        "api::article.article",
-        id,
-        {
-          fields: ["id", "Title", "Slug"],
-          populate: {
-            sections: {
-              populate: {
-                SectionImage: true,
-                NestedSections: {
-                  populate: {
-                    NestedSectionImage: true,
-                  },
-                },
-              },
-            },
-            Image: true,
-            category: {
-              fields: ["Title", "Slug"],
-            },
-          },
-        }
-      );
-
-      if (!article) {
-        ctx.body = "No article found";
-        return;
-      }
-
-      // Include the count of likes and comments
-      const likesCount = await strapi.db.query("api::like.like").count({
-        where: { article: article.id },
-      });
-
-      const commentsCount = await strapi.db
-        .query("api::comment.comment")
-        .count({
-          where: { article: article.id },
-        });
-
-      const articleWithCounts = {
-        ...article,
-        likesCount,
-        commentsCount,
-      };
-
-      // Set the response body
-      ctx.body = articleWithCounts;
-    } catch (err) {
-      // Log the error to console
-      console.error("Error fetching article:", err);
-
-      // Set the response body to the error message
-      ctx.body = {
-        message: "An error occurred while fetching the article.",
-        error: err,
-      };
-    }
-  },
+  }),
 };

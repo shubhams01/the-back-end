@@ -1,9 +1,9 @@
 const path = require("path");
 // @ts-ignore
 const { generateBlurhash } = require("../../../../utils/blurhash");
+const { redisClient } = require("../../../../plugins/cache/server/services");
 
 module.exports = {
-
   async afterCreate(event) {
     const data = event.result;
     console.log("Article Created event", data.Image[0]?.url);
@@ -54,6 +54,19 @@ module.exports = {
         data: { blurhash: coverBlurhash },
       });
     }
+
+    // Caching
+    const { result } = event;
+    // Invalidate cache when article is updated
+    const cacheKey = `article:${result.id}`;
+    await redisClient.del(cacheKey);
+  },
+
+  async afterDelete(event) {
+    const { result } = event;
+    // Invalidate cache when article is deleted
+    const cacheKey = `post:${result.id}`;
+    await redisClient.del(cacheKey);
   },
 };
 
@@ -128,7 +141,7 @@ async function processSections(articleId, sections, coverBlurhash) {
       data: {
         sections: updatedSections,
         // @ts-ignore
-        blurhash: coverBlurhash, 
+        blurhash: coverBlurhash,
       },
     });
 

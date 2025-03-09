@@ -1,4 +1,4 @@
-import type { Schema, Attribute } from '@strapi/strapi';
+import type { Attribute, Schema } from '@strapi/strapi';
 
 export interface SharedMetaSocial extends Schema.Component {
   collectionName: 'components_shared_meta_socials';
@@ -7,6 +7,12 @@ export interface SharedMetaSocial extends Schema.Component {
     icon: 'project-diagram';
   };
   attributes: {
+    description: Attribute.String &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        maxLength: 65;
+      }>;
+    image: Attribute.Media<'images' | 'files' | 'videos'>;
     socialNetwork: Attribute.Enumeration<['Facebook', 'Twitter']> &
       Attribute.Required;
     title: Attribute.String &
@@ -14,43 +20,41 @@ export interface SharedMetaSocial extends Schema.Component {
       Attribute.SetMinMaxLength<{
         maxLength: 60;
       }>;
-    description: Attribute.String &
-      Attribute.Required &
-      Attribute.SetMinMaxLength<{
-        maxLength: 65;
-      }>;
-    image: Attribute.Media;
   };
 }
 
 export interface SharedNestedSecttion extends Schema.Component {
   collectionName: 'components_shared_nested_secttions';
   info: {
+    description: '';
     displayName: 'NestedSecttion';
     icon: 'layer';
-    description: '';
   };
   attributes: {
-    NestedSectionTitle: Attribute.Text;
-    NestedSectionImage: Attribute.Media & Attribute.Required;
     NestedSectionDescription: Attribute.Text;
+    NestedSectionImage: Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    > &
+      Attribute.Required;
     NestedSectionImageBlurhash: Attribute.String;
+    NestedSectionTitle: Attribute.Text;
   };
 }
 
 export interface SharedSection extends Schema.Component {
   collectionName: 'components_shared_sections';
   info: {
+    description: '';
     displayName: 'Section';
     icon: 'layer';
-    description: '';
   };
   attributes: {
-    SectionTitle: Attribute.Text;
-    SectionImage: Attribute.Media & Attribute.Required;
-    SectionDescription: Attribute.Text;
     NestedSections: Attribute.Component<'shared.nested-secttion', true>;
+    SectionDescription: Attribute.Text;
+    SectionImage: Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+      Attribute.Required;
     SectionImageBlurhash: Attribute.String;
+    SectionTitle: Attribute.Text;
   };
 }
 
@@ -61,24 +65,24 @@ export interface SharedSeo extends Schema.Component {
     icon: 'search';
   };
   attributes: {
+    canonicalURL: Attribute.String;
+    keywords: Attribute.Text;
+    metaDescription: Attribute.String &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        maxLength: 160;
+        minLength: 50;
+      }>;
+    metaImage: Attribute.Media<'images' | 'files' | 'videos'>;
+    metaRobots: Attribute.String;
+    metaSocial: Attribute.Component<'shared.meta-social', true>;
     metaTitle: Attribute.String &
       Attribute.Required &
       Attribute.SetMinMaxLength<{
         maxLength: 60;
       }>;
-    metaDescription: Attribute.String &
-      Attribute.Required &
-      Attribute.SetMinMaxLength<{
-        minLength: 50;
-        maxLength: 160;
-      }>;
-    metaImage: Attribute.Media;
-    metaSocial: Attribute.Component<'shared.meta-social', true>;
-    keywords: Attribute.Text;
-    metaRobots: Attribute.String;
-    structuredData: Attribute.JSON;
     metaViewport: Attribute.String;
-    canonicalURL: Attribute.String;
+    structuredData: Attribute.JSON;
   };
 }
 
