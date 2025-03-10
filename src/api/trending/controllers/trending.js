@@ -1,12 +1,31 @@
 "use strict";
 
+const { caching } = require("../../../plugins/cache/server/services");
+// @ts-ignore
+const {
+  client,
+} = require("../../../plugins/cache/server/services/redis-client");
+
+const cacheableResource = caching(
+  "trending",
+  parseInt(process.env.DEFAULT_CACHE_DURATION)
+);
+
 module.exports = {
-  fetchTrendingArticles: async (ctx, next) => {
+  fetchTrendingArticles: cacheableResource(async (ctx) => {
     try {
-      // Define the number of trending articles to fetch
       const limit = ctx.query.limit || 20;
 
-      // Fetch articles sorted by views in descending order
+      const cacheKey = "trending";
+      const cachedData = await client.get(cacheKey);
+
+      if (cachedData) {
+        console.log("Cache HIT Trending! ✅");
+        return JSON.parse(cachedData);
+      }
+
+      console.log("Cache MISS Trending❌, Fetching from DB");
+
       // @ts-ignore
       const trendingArticles = await strapi.entityService.findMany(
         "api::article.article",
@@ -52,12 +71,17 @@ module.exports = {
             ...article,
             likesCount,
             commentsCount,
-            totalEngagement: likesCount + commentsCount, 
+            totalEngagement: likesCount + commentsCount,
           };
         })
       );
 
       articlesWithCounts.sort((a, b) => b.totalEngagement - a.totalEngagement);
+
+      // Set Cache
+      await client.set(cacheKey, JSON.stringify(articlesWithCounts), "EX", 300);
+
+      console.log("✅ Trending Data Cached Successfully!");
 
       ctx.body = articlesWithCounts.slice(0, limit);
     } catch (err) {
@@ -68,5 +92,5 @@ module.exports = {
         error: err,
       };
     }
-  },
+  }),
 };

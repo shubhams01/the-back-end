@@ -95,7 +95,7 @@ module.exports = {
         return ctx.unauthorized("You must be logged in to access this resource.");
       }
 
-      const predefinedInterests = ["Arts", "Science", "Culture", "Travel", "Business", "Technology"];
+      const predefinedInterests = ["Arts", "Science", "Culture", "History", "Technology"];
 
       // Fetch user details including interests
       const detailedUser = await strapi.query("plugin::users-permissions.user").findOne({

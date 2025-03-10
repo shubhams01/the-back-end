@@ -3,7 +3,8 @@ const redisClient = require("./redis-client");
 function cacheDecorator(prefix, duration) {
   return function (fn) {
     return async function (...args) {
-      // We will assume that the entry id is the first argument, you can implement a more generic way to concatenate 
+      
+      // We will assume that the entry id is the first argument,
       // all arguments to form a nested key
 
       const key = args?.[0] ?? "";
