@@ -65,7 +65,7 @@ module.exports = {
   async afterDelete(event) {
     const { result } = event;
     // Invalidate cache when article is deleted
-    const cacheKey = `post:${result.id}`;
+    const cacheKey = `article:${result.id}`;
     await redisClient.del(cacheKey);
   },
 };
