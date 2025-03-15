@@ -1,5 +1,7 @@
 "use strict";
 
+const { client } = require("../../../plugins/cache/server/services/redis-client");
+
 /**
  * article controller
  */
@@ -43,10 +45,12 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
             where: { article: article.id },
           });
 
-          const commentsCount = await strapi.db.query("api::comment.comment").count({
-            // @ts-ignore
-            where: { article: article.id },
-          });
+          const commentsCount = await strapi.db
+            .query("api::comment.comment")
+            .count({
+              // @ts-ignore
+              where: { article: article.id },
+            });
 
           const isLiked = userId
             ? (await strapi.db.query("api::like.like").count({
@@ -96,14 +100,14 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
         "api::article.article",
         id,
         {
-          fields: ["id", "Title", "Slug", 'blurhash'],
+          fields: ["id", "Title", "Slug", "blurhash"],
           populate: {
             sections: {
               populate: {
-               // fields: ["SectionImageBlurhash"],
+                // fields: ["SectionImageBlurhash"],
                 SectionImage: true,
                 NestedSections: {
-                //  fields: ["NestedSectionImageBlurhash"],
+                  //  fields: ["NestedSectionImageBlurhash"],
                   populate: {
                     NestedSectionImage: true,
                   },
@@ -121,10 +125,12 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
         where: { article: article.id },
       });
 
-      const commentsCount = await strapi.db.query("api::comment.comment").count({
-        // @ts-ignore
-        where: { article: article.id },
-      });
+      const commentsCount = await strapi.db
+        .query("api::comment.comment")
+        .count({
+          // @ts-ignore
+          where: { article: article.id },
+        });
 
       const isLiked = userId
         ? (await strapi.db.query("api::like.like").count({
@@ -169,12 +175,28 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
 
   async getArticlesByCategory(ctx) {
     try {
-      // Extract category ID from the request parameters
       const { category } = ctx.params;
-      const userId = ctx.state.user?.id;
+      let { page, pageSize } = ctx.query;
 
-      // Fetch articles for the specified category
-      const articles = await strapi.entityService.findMany(
+      page = parseInt(page, 10) || 1;
+      pageSize = parseInt(pageSize, 10) || 25;
+
+      const start = (page - 1) * pageSize;
+      const cacheKey = `category_${category}_page_${page}_size_${pageSize}`;
+
+      console.log("Cache Key:", cacheKey);
+
+      // Check if cached data exists
+      const cachedData = await client.get(cacheKey);
+      if (cachedData) {
+          console.log(`Cache HIT! ✅ Page ${page} for category: ${category}`);
+          ctx.body = JSON.parse(cachedData);
+          return;
+      }
+
+      console.log(`Cache MISS ❌ Fetching from DB for category: ${category}`);
+
+      const categoryArticles = await strapi.entityService.findMany(
         "api::article.article",
         {
           filters: {
@@ -184,47 +206,52 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
               },
             },
           },
-          fields: ["id", "Title", "Slug", 'blurhash'],
+          fields: ["id", "Title", "Slug", "blurhash"],
           populate: {
             sections: {
               populate: {
-                fields: ["SectionImageBlurhash"],
                 SectionImage: true,
-                NestedSections: {
-                  fields: ["NestedSectionImageBlurhash"],
-                  populate: {
-                    NestedSectionImage: true,
-                  },
-                },
+                NestedSections: { populate: { NestedSectionImage: true } },
               },
             },
             Image: true,
-            category: {
-              fields: ['Title', 'Slug'],
-            }
+            category: { fields: ["Title", "Slug"] },
           },
-          sort: [{ createdAt: "desc" }],
+          offset: start, 
+          limit: pageSize, 
         }
       );
 
-      // Map through the articles to format the response
-      const formattedArticles = articles.map(article => ({
-        id: article.id,
-        title: article.Title,
-        slug: article.Slug,
-        categoryTitle: article.category.Title,
-        categorySlug: article.category.Slug,
-        imageUrl: article.Image[0]?.formats?.large?.url,
-        blurhash: article.blurhash,
-      }));
+      const articlesWithCounts = await Promise.all(
+        categoryArticles.map(async (article) => {
+          const [likesCount, commentsCount] = await Promise.all([
+            strapi.db
+              .query("api::like.like")
+              .count({ where: { article: article.id } }),
+            strapi.db
+              .query("api::comment.comment")
+              .count({ where: { article: article.id } }),
+          ]);
 
-      // Set the response body
-      ctx.body = formattedArticles;
+          return {
+            ...article,
+            likesCount,
+            commentsCount,
+          };
+        })
+      );
+
+      // Set Cache
+      await client.set(cacheKey, JSON.stringify(articlesWithCounts), "EX", 300);
+
+      console.log(
+        `✅ Cached Page ${page} for Category ${category} Successfully!`
+      );
+
+      ctx.body = articlesWithCounts;
     } catch (err) {
-      // Log the error to console
       console.error("Error fetching articles by category:", err);
 
-      // Set the response body to the error message
       ctx.body = {
         message: "An error occurred while fetching articles by category.",
         error: err,
@@ -242,21 +269,25 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
         where: { article: articleId },
       });
 
-      const commentsCount = await strapi.db.query("api::comment.comment").count({
-        where: { article: articleId },
-      });
+      const commentsCount = await strapi.db
+        .query("api::comment.comment")
+        .count({
+          where: { article: articleId },
+        });
 
       let isLiked = false;
       let isSaved = false;
 
       if (userId) {
-        isLiked = await strapi.db.query("api::like.like").count({
-          where: { article: articleId, user: userId },
-        }) > 0;
+        isLiked =
+          (await strapi.db.query("api::like.like").count({
+            where: { article: articleId, user: userId },
+          })) > 0;
 
-        isSaved = await strapi.db.query("api::save.save").count({
-          where: { article: articleId, user: userId },
-        }) > 0;
+        isSaved =
+          (await strapi.db.query("api::save.save").count({
+            where: { article: articleId, user: userId },
+          })) > 0;
       }
 
       const articleActivities = {
@@ -279,5 +310,4 @@ module.exports = createCoreController("api::article.article", ({ strapi }) => ({
       };
     }
   },
-  
 }));
